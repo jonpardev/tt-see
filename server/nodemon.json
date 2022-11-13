@@ -1,0 +1,6 @@
+{
+    "ignore": [".git", ".yarn", "node_modules", "dist"],
+    "watch": ["index.ts", "./src"],
+    "exec": "yarn devStart",
+    "ext": "ts"
+}

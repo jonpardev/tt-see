@@ -1,0 +1,31 @@
+
+name: Build and Deploy on Github Pages
+on: [push] # defaults to main
+permissions:
+  contents: write
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+      
+      - name: Deploy 🚀 Server
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: release-server
+          folder: server
+
+      - name: Install and Build 🔧
+        run: |
+          cd client
+          yarn install
+          yarn run build
+        env:
+          VITE_API_URL: ${{ secrets.API_URL }}
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: release-client
+          folder: client/dist

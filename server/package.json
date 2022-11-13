@@ -1,0 +1,33 @@
+{
+  "name": "server",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node .",
+    "devStart": "ts-node index",
+    "dev": "cross-env NODE_ENV=dev nodemon",
+    "prod": "cross-env NODE_ENV=prod nodemon"
+  },
+  "dependencies": {
+    "axios": "^1.1.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.2",
+    "express": "^4.18.1",
+    "mongoose": "^6.6.5",
+    "morgan": "^1.10.0",
+    "node-cron": "^3.0.2"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.14",
+    "@types/morgan": "^1.9.3",
+    "@types/node": "^18.7.19",
+    "@types/node-cron": "^3.0.4",
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.20",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.8.3"
+  },
+  "packageManager": "yarn@3.2.4"
+}
