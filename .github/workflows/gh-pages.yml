@@ -17,8 +17,8 @@ jobs:
           folder: server
 
       - name: Install and Build 🔧
+        working-directory: client
         run: |
-          cd client
           yarn install
           yarn run build
         env:
