@@ -19,12 +19,12 @@ jobs:
       - name: Install and Build 🔧
         working-directory: client
         run: |
-          yarn install
-          yarn run build
+          npm install
+          npm run-script build
         env:
           VITE_API_URL: ${{ secrets.API_URL }}
 
-      - name: Deploy 🚀
+      - name: Deploy 🚀 Client
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: release-client
