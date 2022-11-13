@@ -1,6 +1,9 @@
 
 name: Build and Deploy on Github Pages
-on: [push] # defaults to main
+on:
+  push:
+    branches:
+      - deploy
 permissions:
   contents: write
 jobs:
@@ -10,13 +13,13 @@ jobs:
       - name: Checkout 🛎️
         uses: actions/checkout@v3
       
-      - name: Deploy 🚀 Server
+      - name: (Server) Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: release-server
           folder: server
 
-      - name: Install and Build 🔧
+      - name: (Client) Install and Build 🔧
         working-directory: client
         run: |
           npm install
@@ -24,7 +27,7 @@ jobs:
         env:
           VITE_API_URL: ${{ secrets.API_URL }}
 
-      - name: Deploy 🚀 Client
+      - name: (Client) Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4
         with:
           branch: release-client
