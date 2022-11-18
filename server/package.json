@@ -1,6 +1,12 @@
 {
   "name": "server",
-  "version": "0.1.0",
+  "private": true,
+  "version": "1.0.0",
+  "license": "MIT",
+  "author": {
+    "name": "Jonny Park",
+    "email": "jonpardev@gmail.com"
+  },
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc",
