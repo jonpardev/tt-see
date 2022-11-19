@@ -8,7 +8,8 @@ import { Status } from './models/alert.model';
 import { Announcement, AnnouncementType } from './components/Announcement';
 import { DisplayRoute } from './components/DisplayRoute';
 import Header from './components/Header';
-import ButtonWithDeactivationTimer from './components/ButonWithTimer';
+import ButtonWithTimer from './components/ButtonWithTimer';
+import LoadingWithCircle from './components/LoadingWithCircle';
 
 
 const App = () => {
@@ -221,7 +222,7 @@ const App = () => {
       <div className="max-w-sm mx-auto bg-slate-700 p-4 rounded-lg border-slate-500">
         <Header />
         {isConnected === false && (<Announcement type={AnnouncementType.Alert} message="⛔ Failed to update!" />)}
-        <div className={`${(isConnected === undefined || isConnected === true) ? "bg-slate-900" : "bg-rose-600"} ${isLoading && "animate-pulse"} text-white px-4 py-3 rounded-lg`}>
+        <div className={`${(isConnected === undefined || isConnected === true) ? "bg-slate-900" : "bg-rose-700"} ${isLoading && "animate-pulse"} text-white p-4 rounded-lg`}>
           {(!isLoading) ? (
             <Fragment>
             {routes?.map((route: IRoute) => (
@@ -229,18 +230,12 @@ const App = () => {
               ))}
             </Fragment>
           ) : (
-            <div className="inline-flex items-center">
-              <svg className="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" className="stroke-slate-200" strokeWidth="4" strokeDasharray="40" strokeDashoffset="40"></circle>
-                <circle cx="12" cy="12" r="10" className="stroke-slate-200 opacity-25" strokeWidth="4"></circle>
-              </svg>
-              Loading...
-            </div>
+            <LoadingWithCircle />
           )}
         </div>
         {/* <div className="text-slate-900 text-sm mt-2">{`🟣 Need-to-check means TT-See detected possible problems on the line`}</div> */}
         {!isLoading && (
-          <ButtonWithDeactivationTimer timer={10} onClick={refreshButtonOnClick} />
+          <ButtonWithTimer timer={10} onClick={refreshButtonOnClick} />
         )}
 
         <div className="mt-3 text-slate-500 text-xs text-right">UpdatedAt: {!isLoading ? textifiedUpdatedAt : <span className="animate-pulse back">Loading</span>} / MapVersion: {!isLoading ? map?._id : <span className="animate-pulse back">Loading</span>}</div>

@@ -1,12 +1,12 @@
 import { MouseEvent, useEffect, useState } from "react";
 import wait from "../helpers/wait";
 
-type ButtonWithDeactivationTimerProps = {
+type ButtonWithTimerProps = {
     timer: number,
     onClick: () => void
 }
 
-const ButtonWithDeactivationTimer = ({ timer, onClick }: ButtonWithDeactivationTimerProps) => {
+const ButtonWithTimer = ({ timer, onClick }: ButtonWithTimerProps) => {
     const [seconds, setSeconds] = useState<number>();
 
     useEffect(() => {
@@ -37,4 +37,4 @@ const ButtonWithDeactivationTimer = ({ timer, onClick }: ButtonWithDeactivationT
     );
 }
 
-export default ButtonWithDeactivationTimer;
+export default ButtonWithTimer;
