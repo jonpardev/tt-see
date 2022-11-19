@@ -7,6 +7,8 @@ import { IMap, ILine, IStation, ILineDto } from './models/map.model';
 import { Status } from './models/alert.model';
 import { Announcement, AnnouncementType } from './components/Announcement';
 import { DisplayRoute } from './components/DisplayRoute';
+import Header from './components/Header';
+import ButtonWithDeactivationTimer from './components/ButonWithTimer';
 
 
 const App = () => {
@@ -17,8 +19,6 @@ const App = () => {
   const [textifiedUpdatedAt, setTextifiedUpdatedAtText] = useState<string>();
   const [map, setMap] = useState<IMap>();
   const [routes, setRoutes] = useState<IRoute[]>();
-  const [isWaiting, setIsWaiting] = useState<boolean>();
-  const [buttonLockTimer, setButtonLockTimer] = useState<number>();
 
   useEffect(() => {
     const localStorageMapUpdater = async () => {
@@ -107,7 +107,7 @@ const App = () => {
     }
   }, []);
 
-  const SetMapRoutesByGetAlerts = useCallback(async () => {
+  const setMapRoutesByGetAlerts = useCallback(async () => {
     const localStorageRoutes = await localStorageService.getRoutes() ?? [ ] as IRoute[];
     const prevRoutes = localStorageRoutes.map(route => ({
       order: route.order,
@@ -172,8 +172,8 @@ const App = () => {
   }, [textifyUpdatedAt]);
 
   useEffect(() => {
-    if (isLocalStorageReady) SetMapRoutesByGetAlerts();
-  }, [isLocalStorageReady, SetMapRoutesByGetAlerts]);
+    if (isLocalStorageReady) setMapRoutesByGetAlerts();
+  }, [isLocalStorageReady, setMapRoutesByGetAlerts]);
 
   const lineToRoute = (order:number, line: ILineDto, start: IStation, end: IStation) => {
     const newLine: ILine = {
@@ -200,13 +200,10 @@ const App = () => {
     } as IRoute;
   }
 
-  const refreshButtonOnClick = useCallback(async () => {
-    if (!isWaiting) {
-      setIsLoading(true);
-      setIsWaiting(true);
-      SetMapRoutesByGetAlerts().then(() =>  setButtonLockTimer(10));
-    }
-  }, [isWaiting, SetMapRoutesByGetAlerts]);
+  const refreshButtonOnClick = () => {
+    setIsLoading(true);
+    setMapRoutesByGetAlerts().then();
+  }
 
   useEffect(() => {
     if(updatedAt !== undefined) {
@@ -219,28 +216,10 @@ const App = () => {
     window.location.reload();
   }
 
-  useEffect(()=> {
-    if (buttonLockTimer !== undefined) {
-      if (buttonLockTimer > 0) {
-        setTimeout(() => {
-          const currentTimer = buttonLockTimer;
-          setButtonLockTimer(currentTimer - 1);
-        }, 1000);
-      }
-      if (buttonLockTimer === 0) {
-        setButtonLockTimer(undefined);
-        setIsWaiting(false);
-      }
-    }
-  }, [buttonLockTimer]);
-
   return (
     <div className="w-screen h-screen bg-slate-800 p-4">
       <div className="max-w-sm mx-auto bg-slate-700 p-4 rounded-lg border-slate-500">
-        <header className="w-full text-center mb-4">
-          <h1 className="text-3xl text-white font-bold">TT-See</h1>
-          <h2 className="text-sm text-white">Toronto Subway Watcher</h2>
-        </header>
+        <Header />
         {isConnected === false && (<Announcement type={AnnouncementType.Alert} message="⛔ Failed to update!" />)}
         <div className={`${(isConnected === undefined || isConnected === true) ? "bg-slate-900" : "bg-rose-600"} ${isLoading && "animate-pulse"} text-white px-4 py-3 rounded-lg`}>
           {(!isLoading) ? (
@@ -261,7 +240,7 @@ const App = () => {
         </div>
         {/* <div className="text-slate-900 text-sm mt-2">{`🟣 Need-to-check means TT-See detected possible problems on the line`}</div> */}
         {!isLoading && (
-          <button className={`w-full ${isWaiting ? `bg-slate-700 text-slate-600` : `bg-slate-600 hover:bg-slate-500 rounded-lg text-white`} my-4 py-8`} onClick={refreshButtonOnClick}>{isWaiting ? `Waiting...${buttonLockTimer}s` : `Refresh!`}</button>
+          <ButtonWithDeactivationTimer timer={10} onClick={refreshButtonOnClick} />
         )}
 
         <div className="mt-3 text-slate-500 text-xs text-right">UpdatedAt: {!isLoading ? textifiedUpdatedAt : <span className="animate-pulse back">Loading</span>} / MapVersion: {!isLoading ? map?._id : <span className="animate-pulse back">Loading</span>}</div>
