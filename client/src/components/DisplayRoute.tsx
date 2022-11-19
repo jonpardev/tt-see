@@ -30,7 +30,7 @@ export const DisplayRoute = ({ route }: DisplayRouteProps) => {
 
     return (
         <Fragment>
-            <div className="flex flex-row justify-between items-center mb-4 last:mb-0 p-4 rounded-lg bg-slate-500 bg-opacity-25 ring-1 ring-slate-500 ring-opacity-40">
+            <div className="flex flex-row justify-between items-center p-4 rounded-lg bg-slate-500 bg-opacity-25 ring-1 ring-slate-500 ring-opacity-40">
                 <div className="text-xl rounded-md overflow-clip leading-none flex flex-row font-bold">
                     <div style={{backgroundColor: `#${route.line.bgColor}`, color: `#${route.line.textColor}`} as CSSProperties}
                         className="w-[1.5em] relative">

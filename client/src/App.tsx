@@ -219,20 +219,19 @@ const App = () => {
 
   return (
     <div className="w-screen h-screen bg-slate-800 p-4">
-      <div className="max-w-sm mx-auto bg-slate-700 p-4 rounded-lg border-slate-500">
+      {/* <div className="max-w-sm mx-auto bg-slate-700 p-4 rounded-lg border-slate-500"> */}
+      <div className={`max-w-sm mx-auto p-4 rounded-lg flex flex-col gap-4 ${(isConnected === undefined || isConnected === true) ? "bg-slate-900" : "bg-rose-900"} ${isLoading && "animate-pulse"}`}>
         <Header />
-        {isConnected === false && (<Announcement type={AnnouncementType.Alert} message="⛔ Failed to update!" />)}
-        <div className={`${(isConnected === undefined || isConnected === true) ? "bg-slate-900" : "bg-rose-700"} ${isLoading && "animate-pulse"} text-white p-4 rounded-lg`}>
-          {(!isLoading) ? (
-            <Fragment>
-            {routes?.map((route: IRoute) => (
-              <DisplayRoute key={route.order} route={route} />
-              ))}
-            </Fragment>
-          ) : (
-            <LoadingWithCircle />
-          )}
-        </div>
+        {isConnected === false && (<Announcement message="Update failed" type={AnnouncementType.Alert} />)}
+        {(!isLoading) ? (
+        <>
+        {routes?.map((route: IRoute) => (
+          <DisplayRoute key={route.order} route={route} />
+        ))}
+        </>
+        ) : (
+        <LoadingWithCircle />
+        )}
         {/* <div className="text-slate-900 text-sm mt-2">{`🟣 Need-to-check means TT-See detected possible problems on the line`}</div> */}
         {!isLoading && (
           <ButtonWithTimer timer={10} onClick={refreshButtonOnClick} />

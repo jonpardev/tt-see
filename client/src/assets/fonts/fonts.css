@@ -11,3 +11,15 @@
         url("./Assistant.woff2")
         format("woff2");
 }
+@font-face {
+    font-family: "MaterialSymbolsOutlined";
+    font-style: normal;
+    font-weight: 100 700;
+    src:
+        url("./MaterialSymbolsOutlined.woff2")
+        format("woff2 supports variations"),
+        url("./MaterialSymbolsOutlined.woff2")
+        format("woff2-variations"),
+        url("./MaterialSymbolsOutlined.woff2")
+        format("woff2");
+}

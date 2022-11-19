@@ -31,8 +31,8 @@ const ButtonWithTimer = ({ timer, onClick }: ButtonWithTimerProps) => {
 
     return (
         <button onClick={buttonOnClick} disabled={(seconds !== undefined)}
-            className={`w-full my-4 py-8 rounded-lg text-3xl font-bold disabled:font-normal bg-slate-600 disabled:bg-slate-700 hover:bg-slate-500 disabled:hover:bg-inherit text-white disabled:text-slate-600`}>
-            {seconds === undefined ? `Refresh` : `Waiting...${seconds}s`}
+            className="w-full h-20 rounded-lg text-3xl text-white font-black bg-slate-600 hover:bg-slate-500 disabled:opacity-50 disabled:hover:bg-slate-600 disabled:cursor-not-allowed">
+            {seconds === undefined ? <span className="font-MaterialSymbols">refresh</span> : `${seconds}`}
         </button>
     );
 }

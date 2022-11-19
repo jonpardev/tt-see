@@ -1,3 +1,4 @@
+import { useMemo } from "react"
 
 export enum AnnouncementType {
     Information,
@@ -10,21 +11,51 @@ type AnnouncementProps = {
     message: string,
 }
 
-export const Announcement = ({ type, message }: AnnouncementProps) => {
-    const informationBanner = (<div className="bg-sky-200 text-sky-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
-    const warningBanner = (<div className="bg-yellow-200 text-yellow-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
-    const alertBanner = (<div className="bg-rose-300 text-rose-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
-    const defaultBanner = (<div className="bg-slate-300 text-slate-800 px-4 py-3 rounded-lg mb-2">{message}</div>);
+type ColorAndSymbol = {
+    color: string,
+    symbol: string,
+}
 
-    if (type === undefined) return defaultBanner;
-    switch (type) {
-        case AnnouncementType.Information:
-            return informationBanner;
-        case AnnouncementType.Warning:
-            return warningBanner;
-        case AnnouncementType.Alert:
-            return alertBanner;
-        default:
-            return defaultBanner;
+export const Announcement = ({ type, message }: AnnouncementProps) => {
+    // const informationBanner = (<div className="bg-sky-200 text-sky-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
+    // const warningBanner = (<div className="bg-yellow-200 text-yellow-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
+    // const alertBanner = (<div className="text-white bg-rose-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
+    // const defaultBanner = (<div className="bg-slate-300 text-slate-800 px-4 py-3 rounded-lg mb-2">{message}</div>);
+
+    // if (type === undefined) return defaultBanner;
+    // switch (type) {
+    //     case AnnouncementType.Information:
+    //         return informationBanner;
+    //     case AnnouncementType.Warning:
+    //         return warningBanner;
+    //     case AnnouncementType.Alert:
+    //         return alertBanner;
+    //     default:
+    //         return defaultBanner;
+    // }
+
+    const information: ColorAndSymbol = { color: "bg-sky-600", symbol: "notifications" }
+    const warning: ColorAndSymbol = { color: "bg-amber-600", symbol: "warning" }
+    const alert: ColorAndSymbol = { color: "bg-rose-600", symbol: "error" }
+
+    const returnColorAndSymbol = () => {
+        console.log(`this was called`);
+        switch (type) {
+            case AnnouncementType.Warning:
+                return warning;
+            case AnnouncementType.Alert:
+                return alert;
+            default:
+                return information;
+        }
     }
+
+    const colorAndSymbolMemo = useMemo(() => returnColorAndSymbol(), []);
+
+    return (
+        <div className={`text-white px-4 py-1 rounded-lg flex flex-row items-center ${colorAndSymbolMemo.color}`}>
+            <div className="font-MaterialSymbols text-[1.5em] mr-2">{colorAndSymbolMemo.symbol}</div>
+            <div>{message}</div>
+        </div>
+    );
 }
