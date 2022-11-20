@@ -6,10 +6,11 @@ import IRoute from './models/route.model';
 import { IMap, ILine, IStation, ILineDto } from './models/map.model';
 import { Status } from './models/alert.model';
 import { Announcement, AnnouncementType } from './components/Announcement';
-import { DisplayRoute } from './components/DisplayRoute';
+import { DisplayRoute } from './components/DisplayRoute/DisplayRoute';
 import Header from './components/Header';
 import ButtonWithTimer from './components/ButtonWithTimer';
 import LoadingWithCircle from './components/LoadingWithCircle';
+import SelfExpandable from './components/SelfExpandable';
 
 
 const App = () => {
@@ -232,15 +233,15 @@ const App = () => {
         ) : (
         <LoadingWithCircle />
         )}
-        {/* <div className="text-slate-900 text-sm mt-2">{`🟣 Need-to-check means TT-See detected possible problems on the line`}</div> */}
         {!isLoading && (
           <ButtonWithTimer timer={10} onClick={refreshButtonOnClick} />
         )}
-
-        <div className="mt-3 text-slate-500 text-xs text-right">UpdatedAt: {!isLoading ? textifiedUpdatedAt : <span className="animate-pulse back">Loading</span>} / MapVersion: {!isLoading ? map?._id : <span className="animate-pulse back">Loading</span>}</div>
-        <div className="text-slate-600 text-xs text-right mt-1">
-          <span className="cursor-default" onClick={resetMapOnClick}>Reset the map</span>
-        </div>
+        <SelfExpandable jsxElement={(<>
+          <div className="text-slate-500 text-xs text-center">UpdatedAt: {!isLoading ? textifiedUpdatedAt : <span className="animate-pulse back">Loading</span>} / MapVersion: {!isLoading ? map?._id : <span className="animate-pulse back">Loading</span>}</div>
+          <div className="text-slate-600 text-xs text-right mt-1">
+            <span className="cursor-default" onClick={resetMapOnClick}>Reset the map</span>
+          </div>
+        </>)} />
       </div>
     </div>
   );
