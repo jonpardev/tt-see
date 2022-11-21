@@ -14,6 +14,14 @@ import * as officialAlertService from './src/services/officialAlert.service';
 const app = express();
 const server = http.createServer(app);
 
+/**
+ * Global
+ */
+
+declare global {
+    var isOfficialServerAlive: boolean | undefined;
+}
+
 
 /**
  * Middleware
@@ -43,9 +51,8 @@ mongoose.connect(DB_URI).then(() => {
 cron.schedule('* * * * *', () => {
     officialAlertService.updateOfficialAlerts()
         .then()
-        .catch((err: Error) => console.error(`[Error:OfficialAlert] ${err.message}`));
+        .catch((err: Error) => console.error(`[Error:OfficialAlert] ${err.message}`))
 });
-
 
 /**
  * Routes

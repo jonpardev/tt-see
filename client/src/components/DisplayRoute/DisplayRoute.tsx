@@ -15,6 +15,7 @@ export const DisplayRoute = ({ route }: DisplayRouteProps) => {
     const [details, setDetails] = useState<JSX.Element>();
 
     useEffect(() => {
+        console.log(`this is called`)
         if (route.officialNoService.length > 0) setHasOfficialAlert(true);
         if (route.officialDelays.length > 0) setHasOfficialAlert(true);
     }, []);

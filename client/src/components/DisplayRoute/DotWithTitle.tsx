@@ -5,7 +5,6 @@ type DotWithTitleProps = {
 }
 
 const DotWithTitle = ({ bgColor, title, isDotPing }: DotWithTitleProps) => {
-    console.log(`this was called for: ${bgColor}`)
     return (
         <div className="flex flex-row gap-2 items-center">
             <div className="relative">

@@ -21,17 +21,14 @@ const SelfExpandable = ({ initialIsExpanded, isHandleBounce, jsxElement, onClick
     }
 
     useEffect(() => {
-        console.log(`this is called`)
         if (detailsRef.current) {
             const firstTop = detailsRef.current?.firstElementChild?.getBoundingClientRect().top ?? 0;
             const lastBottom = detailsRef.current?.lastElementChild?.getBoundingClientRect().bottom ?? 0;
-            console.log(`prev: ${Math.ceil(lastBottom-firstTop)}`)
             setMaxHeight(Math.ceil(lastBottom-firstTop));
             const temp1 = [...detailsRef.current?.children]
             if (temp1.length > 0) {
                 const temp2 = temp1.map(t => t.clientHeight);
                 const temp3 = temp2.reduce((prev, current) => prev + current);
-                console.log(`temp: ${temp3}`);
             }
             return;
         }
