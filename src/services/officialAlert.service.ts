@@ -110,8 +110,10 @@ const getOfficialAlerts = async() => {
             }
             alerts.push(newAlert);
         });
+        globalThis.isOfficialServerAlive = true;
         return alerts;
     } catch(error: unknown) {
+        globalThis.isOfficialServerAlive = false;
         if (error instanceof Error) throw error;
         else throw new Error(`[Error] getOfficialAlerts - others`);
     }
