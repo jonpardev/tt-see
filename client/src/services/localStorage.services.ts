@@ -72,7 +72,10 @@ export const setAlertsUpdatedAt = async (alertUpdatedAt: number) => {
     localStorage.setItem(Keys.alertsUpdatedAt, alertUpdatedAt.toString());
 }
 
-export const getTheme = async () => localStorage.getItem(Keys.theme);
+export const getTheme = async () => {
+    const themeString = localStorage.getItem(Keys.theme);
+    return themeString ?? undefined;
+}
 
 export const setThemeLight = async () => localStorage.setItem(Keys.theme, GlobalTheme.light);
 

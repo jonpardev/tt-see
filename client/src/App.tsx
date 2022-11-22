@@ -12,9 +12,9 @@ import LoadingWithCircle from './components/LoadingWithCircle';
 import SelfExpandable from './components/SelfExpandable';
 import { localStorageInitializer } from './helpers/localStorage.helper';
 import { epochToText } from './helpers/epochToText';
-import { useAppDispatch, useAppSelector } from './store/hooks';
+import { useAppSelector } from './store/hooks';
 import { GlobalTheme } from './services/localStorage.services';
-import { setThemeDark, setThemeLight } from './store/globalThemeSlice';
+import setTheme from './helpers/setTheme';
 
 const App = () => {
   // states of App
@@ -25,7 +25,6 @@ const App = () => {
   const [routes, setRoutes] = useState<IRoute[]>();
   const [updatedAt, setUpdatedAt] = useState<number>();
 
-  const dispatch = useAppDispatch();
   const isThemeDark = useAppSelector(state => state.globalTheme.isDark);
 
   const setMapRoutesByGetAlerts = async () => {
@@ -94,17 +93,21 @@ const App = () => {
   useLayoutEffect(() => {
     const getLocalStorageTheme = async () => {
       const localStorageTheme = await localStorageService.getTheme();
-      if (localStorageTheme) {
+      if (localStorageTheme === undefined) {
+        if (isThemeDark) {
+          setTheme.dark();
+          localStorageService.setThemeDark();
+        } else {
+          setTheme.light();
+          localStorageService.setThemeLight();
+        }
+      } else {
         switch (localStorageTheme) {
           case GlobalTheme.light:
-            dispatch(setThemeLight());
-            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#e2e8f0");
-            document.querySelector("html")!.removeAttribute("class");
+            setTheme.light();
             break;
           case GlobalTheme.dark:
-            dispatch(setThemeDark());
-            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#1E293B");
-            document.querySelector("html")!.setAttribute("class", "dark");
+            setTheme.dark();
             break;
         }
       }

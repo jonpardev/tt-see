@@ -1,23 +1,18 @@
-import { MouseEvent, useEffect, useState } from "react";
-import { setThemeDark, setThemeLight } from "../../store/globalThemeSlice";
-import { useAppDispatch, useAppSelector } from "../../store/hooks";
+import { MouseEvent } from "react";
+import { useAppSelector } from "../../store/hooks";
 import * as localStorageService from '../../services/localStorage.services';
+import setTheme from "../../helpers/setTheme";
 
 const ThemeButton = () => {
-    const dispatch = useAppDispatch();
     const isThemeDark = useAppSelector(state => state.globalTheme.isDark);
 
     const buttonOnClick = (event: MouseEvent<HTMLButtonElement>) => {
         event.preventDefault();
         if (isThemeDark) {
-            dispatch(setThemeLight());
-            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#e2e8f0");
-            document.querySelector("html")!.removeAttribute("class");
+            setTheme.light();
             localStorageService.setThemeLight();
         } else {
-            dispatch(setThemeDark());
-            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#1E293B");
-            document.querySelector("html")!.setAttribute("class", "dark");
+            setTheme.dark();
             localStorageService.setThemeDark();
         }
     }
