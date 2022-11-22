@@ -12,10 +12,12 @@ const ThemeButton = () => {
         if (isThemeDark) {
             dispatch(setThemeLight());
             document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#e2e8f0");
+            document.querySelector("html")!.removeAttribute("class");
             localStorageService.setThemeLight();
         } else {
             dispatch(setThemeDark());
             document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#1E293B");
+            document.querySelector("html")!.setAttribute("class", "dark");
             localStorageService.setThemeDark();
         }
     }

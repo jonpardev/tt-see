@@ -99,10 +99,12 @@ const App = () => {
           case GlobalTheme.light:
             dispatch(setThemeLight());
             document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#e2e8f0");
+            document.querySelector("html")!.removeAttribute("class");
             break;
           case GlobalTheme.dark:
             dispatch(setThemeDark());
             document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#1E293B");
+            document.querySelector("html")!.setAttribute("class", "dark");
             break;
         }
       }
@@ -127,8 +129,7 @@ const App = () => {
   const updatedAtToText = useMemo(() => epochToText(updatedAt), [updatedAt]);
 
   return (
-    <div className={`${isThemeDark && "dark"}`}>
-    <div className="w-screen h-screen bg-slate-200 dark:bg-slate-800 p-4">
+    <div className=" bg-slate-200 dark:bg-slate-800 p-4">
       <div className={`max-w-sm mx-auto p-4 rounded-lg flex flex-col gap-4 ${(isConnected === undefined || isConnected === true) ? "bg-slate-100 dark:bg-slate-900" : "bg-rose-200 dark:bg-rose-900"} ${isLoading && "animate-pulse"}`}>
         <Header />
         {isConnected === false && (<Announcement message="Update failed" type={AnnouncementType.Alert} />)}
@@ -154,7 +155,6 @@ const App = () => {
           </div>
         </>)} />
       </div>
-    </div>
     </div>
   );
 }
