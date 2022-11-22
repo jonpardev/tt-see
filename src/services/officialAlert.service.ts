@@ -1,12 +1,11 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
-import { HydratedDocument } from 'mongoose';
+import axios from 'axios';
+import { HydratedDocument, Types } from 'mongoose';
 import { OFFICIAL_URI } from '../config/env';
-import { Alert, IAlert, Status } from '../models/alert.model';
-import { ILine } from '../models/line.models';
+import { Alert, IAlert, IAlertDto, Status } from '../models/alert.model';
 import { IStation } from '../models/station.model';
-import { Effect, OfficialAlert, OfficialAlertRoute } from '../types/officialAlert.type';
+import { Effect, OfficialAlert as OfficialRaw, OfficialAlertRoute as OfficialRawRoute } from '../types/officialAlert.type';
 import { findOfficialAlerts, saveOfficialAlerts } from './alert.service';
-import { findLatestMap, findLine } from './map.service';
+import { findLatestMap } from './map.service';
 
 const officialApi = axios.create({
     baseURL: OFFICIAL_URI,
@@ -15,116 +14,145 @@ const officialApi = axios.create({
     }
 });
 
-export const updateOfficialAlerts = async () => (
-    new Promise<undefined>((resolve, reject) => {
-        manageOfficialAlerts()
-            .then(alerts => {
-                saveOfficialAlerts(alerts)
-                    .then(() => {
-                        resolve(undefined);
-                    })
-                    .catch((err: Error) => reject(err));
-            })
-            .catch((err: Error) => reject(err));
-    }));
-
-const manageOfficialAlerts = async () => (
-    new Promise<HydratedDocument<IAlert>[]>((resolve, reject) => {
-        transformIntoAlerts()
-            .then(transformedAlerts => {
-                findOfficialAlerts()
-                    .then(currentAlerts => {
-
-                        const newAlerts = transformedAlerts.filter(transformedAlert => (
-                            currentAlerts.every(currentAlert => (
-                                !(transformedAlert.line_id === currentAlert.line_id && transformedAlert.station_id === currentAlert.station_id)
-                            ))));
-                        const hydratedNewAlerts = newAlerts.map(newAlert => new Alert(newAlert));
-                        
-                        let alertsWithoutDupes = currentAlerts;
-                        if (transformedAlerts && transformedAlerts.length > 0)  {
-                            alertsWithoutDupes = currentAlerts.filter(currentAlert => (
-                                transformedAlerts.every(transformedAlert => (
-                                    !(transformedAlert.line_id === currentAlert.line_id && transformedAlert.station_id === currentAlert.station_id && transformedAlert.status === currentAlert.status)
-                                ))));
-                        }
-                        alertsWithoutDupes.forEach(alertWithoutDupes => {
-                            const foundAlert = transformedAlerts.find(alert => (alertWithoutDupes.line_id === alert.line_id && alertWithoutDupes.station_id === alert.station_id));
-                            alertWithoutDupes.status = (foundAlert ? foundAlert.status : Status.Dismissed);
-                        });
-
-                        const result = hydratedNewAlerts.concat(alertsWithoutDupes);
-                        if (result.length > 0) console.log(`[OfficialAlert] Update: ${result.length}`)
-                        resolve(result);
-                    })
-                    .catch((err: Error) => reject(err));
-            })
-            .catch((err: Error) => reject(err));
-    }));
-
-const transformIntoAlerts = async () => {
+export const updateOfficialAlerts = async () => {
     try {
-        const officialAlertRoutes = await getOfficialAlerts();
-        const map = await findLatestMap();
-        const alerts: IAlert[] = [ ];
-        officialAlertRoutes?.forEach(async (route) => {
-            const routeType = route.routeType.toLowerCase();
-            const routeNumber = route.route.toString();
-            const foundLine = map.lines.find(line => line.type === routeType && line.number === routeNumber);
-            if(!foundLine) return; // continue(*skip) for forEach
-            // const line = await findLine(routeType, routeNumber);
-            const stations = titleToStations(route.title, foundLine.stations);
-            stations.forEach(station => {
-                const alert: IAlert = {
-                    // map_id: map._id,
-                    line_id: foundLine._id,
-                    station_id: station._id,
-                    status: effectToStatus(route.effect),
+        const alerts = await manageOfficialAlerts();
+        await saveOfficialAlerts(alerts);
+    } catch(error: unknown) {
+        if (error instanceof Error) throw error;
+        else throw new Error(`[ERROR:updateOfficialAlerts] Unexpected`);
+    }
+    
+}
+
+/**
+ * Compare newly retrieved alerts with stored alerts, and update them.
+ */
+const manageOfficialAlerts = async (): Promise<HydratedDocument<IAlert>[]> => {
+    try {
+        const updateTargetAlerts: HydratedDocument<IAlert>[] = [ ];
+
+        const newAlertDtos = await transformToAlerts();
+        const currentAlerts = await findOfficialAlerts();
+
+        // Take one by one from newAlertDtos and if currentAlerts had already had it, just change the stations of it or make new alert from it.
+        newAlertDtos.forEach(newAlertDto => {
+            const dateNow = new Date(Date.now());
+            const foundAlertIndex = currentAlerts.findIndex(currentAlert => newAlertDto.line_id.equals(currentAlert.line_id) && newAlertDto.status === currentAlert.status);
+
+            if (foundAlertIndex >= 0) {
+                const foundAlert: HydratedDocument<IAlert> = currentAlerts[foundAlertIndex];
+                // And remove the alert so that later, the remaining alerts can be flagged as dismissed.
+                currentAlerts.splice(foundAlertIndex, 1);
+                // compare the station array
+                if (!foundAlert.station_ids.sort().toString().match(newAlertDto.station_ids.sort().toString())) {
+                    foundAlert.station_ids = newAlertDto.station_ids;
+                    foundAlert.messages = newAlertDto.messages;
+                    foundAlert.updatedAt = new Date(Date.now());
+                    updateTargetAlerts.push(foundAlert);
                 }
-                alerts.push(alert);
-            });
+            } else {
+                updateTargetAlerts.push(new Alert({
+                    ...newAlertDto,
+                    _id: new Types.ObjectId(),
+                    createdAt: dateNow,
+                    updatedAt: dateNow,
+                } as IAlert));
+            }
+        });
+
+        // Flag the remaining alerts.
+        currentAlerts.forEach(remainingAlert => {
+            const dismissedAlert: HydratedDocument<IAlert> = remainingAlert;
+            dismissedAlert.status = Status.Dismissed;
+            updateTargetAlerts.push(dismissedAlert);
+        });
+
+        if (updateTargetAlerts.length > 0) console.log(`[LOG:manageOfficialAlerts] Updated: ${updateTargetAlerts.length}`);
+
+        return updateTargetAlerts;
+    } catch(error: unknown) {
+        if (error instanceof Error) throw error;
+        else throw new Error(`[ERROR:manageOfficialAlerts] Unexpected`);
+    }
+}
+
+/**
+ * Transform alerts from `getOfficialAlerts` into `IAlert` model
+ */
+const transformToAlerts = async () => {
+    try {
+        const officialRawRoutes = await getOfficialRawRoutes();
+        const map = await findLatestMap();
+        const alerts: IAlertDto[] = [ ];
+        officialRawRoutes?.forEach(route => {
+            const rawType = route.routeType.toLowerCase();
+            const rawNumber = route.route.toString();
+            const foundLine = map.lines.find(line => line.type === rawType && line.number === rawNumber);
+            if(!foundLine) return; // continue(*skip) for forEach
+            const dateNow = new Date(Date.now());
+
+            const alert: IAlertDto = {
+                line_id: foundLine._id,
+                status: effectToStatus(route.effect),
+                station_ids: titleToStations(route.title, foundLine.stations).map(station => station._id),
+                messages: [route.title],
+            }
+            alerts.push(alert);
         });
         return alerts;
     } catch(error: unknown) {
         if (error instanceof Error) throw error;
-        else throw new Error(`[Error] transformIntoAlerts - others`);
+        else throw new Error(`[ERROR:transformToAlerts] Unexpected`);
     }
 }
 
-const getOfficialAlerts = async() => {
+/**
+ * Retrieve raw data from the official server and purify them.
+ */
+const getOfficialRawRoutes = async() => {
     try {
-        const response = await officialApi.get<OfficialAlert>("/api/alerts/live-alerts");
+        const response = await officialApi.get<OfficialRaw>("/");
         const routes = response.data.routes;
-        if (!routes) throw new Error(`[Error] getOfficialAlerts - Cannot find 'routes`);
-        const alerts: OfficialAlertRoute[] = [ ];
+        if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes`);
+        const rawRoutes: OfficialRawRoute[] = [ ];
         routes.forEach(alert => {
             if (alert.routeType !== "Subway") return; // continue(*skip) for forEach
             if (alert.route >= 5 || alert.route < 1) return; // continue(*skip) for forEach
             if ([null, Effect.OtherEffect].includes(alert.effect)) return; // continue(*skip) for forEach
     
-            const newAlert: OfficialAlertRoute = {
+            const newAlert: OfficialRawRoute = {
                 routeType: alert.routeType,
                 route: alert.route,
                 title: alert.title,
                 effect: alert.effect,
             }
-            alerts.push(newAlert);
+            rawRoutes.push(newAlert);
         });
-        globalThis.isOfficialServerAlive = true;
-        return alerts;
+        return rawRoutes;
     } catch(error: unknown) {
-        globalThis.isOfficialServerAlive = false;
         if (error instanceof Error) throw error;
-        else throw new Error(`[Error] getOfficialAlerts - others`);
+        else throw new Error(`[ERROR:getOfficialAlerts] Unexpected`);
     }
 }
 
+/**
+ * Extract station names from `title` and find matched stations.
+ * @param title A string that station names will be extracted from.
+ * @param stations An array of `IStation` that find matches from.
+ * @returns An array of `IStation`.
+ */
 const titleToStations = (title: string, stations: IStation[]) => {
     const foundStations = stations.filter((station) => title.match(station.name)).sort((a, b) => (a.order - b.order));
     const finalStations = stations.filter((station) => (station.order >= foundStations[0].order && station.order <= foundStations[foundStations.length - 1].order));
     return finalStations;
 };
 
+/**
+ * Convert `effect` to `Status`
+ * @param effect 
+ * @returns `Status`
+ */
 const effectToStatus = (effect: string | null) => {
     switch (effect) {
         case Effect.SignificantDelays: {
@@ -134,19 +162,7 @@ const effectToStatus = (effect: string | null) => {
             return Status.OfficialNoService;
         }
         default: {
-            throw new Error(`Can't change effect into status: ${effect}`);
+            throw new Error(`[ERROR:effectToStatus] Cannot recognise effect: ${effect}`);
         }
-    }
-}
-
-export const getOfficialRoutes = async() => {
-    try {
-        const response = await officialApi.get<OfficialAlert>("/api/alerts/live-alerts");
-        const routes = response.data.routes;
-        if (!routes) throw new Error(`[Error] getOfficialAlerts - Cannot find 'routes`);
-        return routes;
-    } catch(error: unknown) {
-        if (error instanceof Error) throw error;
-        else throw new Error(`[Error] getOfficialAlerts - others`);
     }
 }

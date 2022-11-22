@@ -44,14 +44,14 @@ app.use(express.json());
 mongoose.connect(DB_URI).then(() => {
     console.info(`[DB] Connected.`);
 }).catch((err: Error) => {
-    console.error(`[Error:DB] ${err.message}`);
+    console.error(`[ERROR:DB] ${err.message}`);
 });
 
 // cron: scheduler
 cron.schedule('* * * * *', () => {
     officialAlertService.updateOfficialAlerts()
         .then()
-        .catch((err: Error) => console.error(`[Error:OfficialAlert] ${err.message}`))
+        .catch((err: Error) => console.error(`[ERROR:updateOfficialAlerts] ${err.message}`))
 });
 
 /**
