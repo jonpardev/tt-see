@@ -5,7 +5,14 @@ export enum Keys {
     map = 'map',
     lines = 'lines',
     routes = 'routes',
-    alertsUpdatedAt = 'alertsUpdatedAt'
+    alertsUpdatedAt = 'alertsUpdatedAt',
+    theme = 'theme',
+}
+
+export enum GlobalTheme {
+    light = "light",
+    dark = "dark",
+    system = "system",
 }
 
 export const getMap = async () => {
@@ -64,3 +71,9 @@ export const getAlertsUpdatedAt = async () => {
 export const setAlertsUpdatedAt = async (alertUpdatedAt: number) => {
     localStorage.setItem(Keys.alertsUpdatedAt, alertUpdatedAt.toString());
 }
+
+export const getTheme = async () => localStorage.getItem(Keys.theme);
+
+export const setThemeLight = async () => localStorage.setItem(Keys.theme, GlobalTheme.light);
+
+export const setThemeDark = async () => localStorage.setItem(Keys.theme, GlobalTheme.dark);

@@ -38,7 +38,7 @@ const SelfExpandable = ({ initialIsExpanded, isHandleBounce, jsxElement, onClick
     return (
         <div className="basis-full flex flex-col items-center">
             <button onClick={buttonOnClick}
-                className={`rounded-lg font-MaterialSymbols text-white text-xl leading-none ${isExpanded && "h-fit"}`}><span className={`inline-block ${isExpanded ? "rotate-180" : (isHandleBounce ? "animate-bounce" : "rotate-0")}`}>expand_more</span></button>
+                className={`rounded-lg font-MaterialSymbols text-black dark:text-white text-xl leading-none ${isExpanded && "h-fit"}`}><span className={`inline-block ${isExpanded ? "rotate-180" : (isHandleBounce ? "animate-bounce" : "rotate-0")}`}>expand_more</span></button>
             <div ref={detailsRef} className="w-full overflow-hidden leading-tight text-sm text-white transition-all" style={{ maxHeight: `${isExpanded ? `${maxHeight}px` : "0px"}` }}>
                 {jsxElement}
             </div>

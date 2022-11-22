@@ -31,7 +31,7 @@ const ButtonWithTimer = ({ timer, onClick }: ButtonWithTimerProps) => {
 
     return (
         <button onClick={buttonOnClick} disabled={(seconds !== undefined)}
-            className="w-full h-20 rounded-lg text-3xl font-black border border-slate-600 text-white disabled:text-slate-600 bg-slate-600 hover:bg-slate-500 disabled:bg-inherit disabled:hover:bg-inherit disabled:active:scale-95 disabled:cursor-not-allowed">
+            className="w-full h-20 rounded-lg text-3xl font-black border-2 border-slate-500 hover:border-slate-600 text-white disabled:text-slate-500 bg-slate-500 hover:bg-slate-600 disabled:bg-inherit disabled:hover:bg-inherit disabled:active:scale-95 disabled:cursor-not-allowed">
             {seconds === undefined ? <span className="font-MaterialSymbols">refresh</span> : `${seconds}`}
         </button>
     );
