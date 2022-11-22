@@ -11,9 +11,11 @@ const ThemeButton = () => {
         event.preventDefault();
         if (isThemeDark) {
             dispatch(setThemeLight());
+            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#e2e8f0");
             localStorageService.setThemeLight();
         } else {
             dispatch(setThemeDark());
+            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#1E293B");
             localStorageService.setThemeDark();
         }
     }

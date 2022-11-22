@@ -98,9 +98,11 @@ const App = () => {
         switch (localStorageTheme) {
           case GlobalTheme.light:
             dispatch(setThemeLight());
+            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#e2e8f0");
             break;
           case GlobalTheme.dark:
             dispatch(setThemeDark());
+            document.querySelector("meta[name='theme-color']")!.setAttribute("content", "#1E293B");
             break;
         }
       }
