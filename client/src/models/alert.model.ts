@@ -3,13 +3,12 @@ export enum Status {
     Invisible = "INVISIBLE",
     OfficialDelays = "OFFICIAL_DELAYS",
     OfficialNoService = "OFFICIAL_NO_SERVICE",
-    PresumedDelays = "PRESUMED_DELAYS",
-    PresumedNoService = "PRESUMED_NO_SERVICE",
+    NeedToCheck = "NEED_TO_CHECK",
 }
 
 export default interface IAlert {
-    map_id: number;
-    line_id: number;
-    station_id: number;
+    line_id: string;
     status: Status;
+    station_ids: string[];
+    messages:string[];
 }

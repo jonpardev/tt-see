@@ -1,8 +1,7 @@
 import IRoute from '../models/route.model';
-import { ILine, ILineDto, IStation } from '../models/map.model';
+import { ILineDto, IStation } from '../models/map.model';
 import * as localStorageService from '../services/localStorage.services';
 import * as mapService from '../services/map.services';
-import { SetStateAction, useCallback } from 'react';
 
 type FinalFunc = () => Promise<void>
 
@@ -24,6 +23,7 @@ const localStorageMapUpdater = async () => {
         } else {
             const latestId = await mapService.getLatestId();
             if (latestId !== map._id) {
+            localStorage.clear();
             const mapDto = await mapService.getMapDto();
             localStorageService.setMapLines(mapDto);
             }
@@ -63,27 +63,19 @@ const allSubwayLinesProvider = async () => {
 }
 // -->
 
-export const lineToRoute = (order:number, line: ILineDto, start: IStation, end: IStation) => {
-    const newLine: ILine = {
-        _id: line._id,
-        type: line.type,
-        number: line.number,
-        name: line.name,
-        bgColor: line.bgColor,
-        textColor: line.textColor,
-    }
-    let stationIds: number[] = [];
-    const stations = line.stations.sort((a, b) => a.order - b.order);
+export const lineToRoute = (order:number, lineDto: ILineDto, start: IStation, end: IStation): IRoute => {
+    const {stations: _, ...line} = lineDto;
+    let stationIds: string[] = [];
+    const stations = lineDto.stations.sort((a, b) => a.order - b.order);
     if (start.order < end.order) stationIds = stations.slice(start.order - 1, end.order).map(station => station._id);
     else if (start.order > end.order) stationIds = stations.slice(end.order - 1, start.order).sort((a, b) => b.order - a.order).map(station => station._id);
     else stationIds = [start._id];
     return {
         order: order,
-        line: newLine,
+        line: line,
         stations: stationIds,
-        presumedDelays: new Array<number>(),
-        presumedNoService: new Array<number>(),
-        officialDelays: new Array<number>(),
-        officialNoService: new Array<number>(),
+        officialDelays: new Array<string>(),
+        officialNoService: new Array<string>(),
+        needToCheck: new Array<string>(),
     } as IRoute;
 }

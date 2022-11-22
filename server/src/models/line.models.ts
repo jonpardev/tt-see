@@ -2,7 +2,7 @@ import { Types, Model, Schema } from "mongoose";
 import { IStation, stationSchema } from "./station.model";
 
 export interface ILine {
-    _id: number;
+    _id: Types.ObjectId;
     type: "subway" | "bus" | "streetcar";
     number: string;
     name: string;
@@ -11,18 +11,13 @@ export interface ILine {
     textColor?: string;
 }
 
-// TmethodsAndOverrides for subdocumenting
+// TMethodsAndOverrides
 type LineDocumentProps = {
-    _id: number;
-    lines: Types.DocumentArray<ILine>;
+    stations: Types.DocumentArray<IStation>;
 }
 type LineModelType = Model<ILine, {}, LineDocumentProps>;
 
 export const lineSchema = new Schema<ILine, LineModelType>({
-    _id: {
-        type: Number,
-        required: true,
-    },
     type: {
         type: String,
         required: true,

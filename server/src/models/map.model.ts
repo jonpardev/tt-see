@@ -2,23 +2,24 @@ import { Types, Model, Schema, model } from "mongoose";
 import { ILine, lineSchema } from "./line.models";
 
 export interface IMap {
-    _id: number;
+    _id: Types.ObjectId;
     lines: ILine[];
+    createdAt: Date;
 }
 
-// TmethodsAndOverrides for subdocumenting
+// TMethodsAndOverrides
 type MapDocumentProps = {
-    _id: number;
     lines: Types.DocumentArray<ILine>;
 }
 type MapModelType = Model<IMap, {}, MapDocumentProps>;
 
 const mapSchema = new Schema<IMap, MapModelType>({
-    _id: {
-        type: Number,
-        required: true,
-    },
     lines: [lineSchema],
+    createdAt: {
+        type: Date,
+        required: true,
+        default: () => new Date(Date.now()),
+    },
 }, {
     collection: 'map'
 });

@@ -1,11 +1,11 @@
 export interface IStation {
-    _id: number;
+    _id: string;
     order: number;
     name: string;
 }
 
 export interface ILine {
-    _id: number;
+    _id: string;
     type: "subway" | "bus" | "streetcar";
     number: string;
     name: string;
@@ -18,10 +18,11 @@ export interface ILineDto extends ILine {
 }
 
 export interface IMap {
-    _id: number;
-    updatedAt: number;
+    _id: string;
+    retrievedAt: number;
 }
 
 export interface IMapDto extends IMap {
     lines: ILineDto[];
+    createdAt: number;
 }

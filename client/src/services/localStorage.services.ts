@@ -42,7 +42,7 @@ export const setLines = async (linesDtos: ILineDto[]) => {
 export const setMapLines = async (mapDto: IMapDto) => {
     const map: IMap = {
         _id: mapDto._id,
-        updatedAt: mapDto.updatedAt,
+        retrievedAt: mapDto.retrievedAt,
     }
     setMap(map);
     setLines(mapDto.lines);

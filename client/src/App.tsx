@@ -41,30 +41,27 @@ const App = () => {
         order: route.order,
         line: route.line,
         stations: route.stations,
-        presumedDelays: [ ],
-        presumedNoService: [ ],
+        messages: route.messages,
         officialDelays: [ ],
         officialNoService: [ ],
+        needToCheck: [ ],
       } as IRoute));
       let newRoutes = [...prevRoutes] // shallow copy
       alerts.forEach(alert => {
-        const route = newRoutes.find((route: IRoute) => (route.line._id === alert.line_id));
+        const route = newRoutes.find(route => (route.line._id === alert.line_id));
         if (route) {
+          route.messages = alert.messages;
           switch (alert.status) {
             case (Status.OfficialDelays): {
-              route.officialDelays.push(alert.station_id);
+              route.officialDelays = alert.station_ids;
               break;
             }
             case (Status.OfficialNoService): {
-              route.officialNoService.push(alert.station_id);
+              route.officialNoService = alert.station_ids;
               break;
             }
-            case (Status.PresumedDelays): {
-              route.presumedDelays.push(alert.station_id);
-              break;
-            }
-            case (Status.PresumedNoService): {
-              route.presumedNoService.push(alert.station_id);
+            case (Status.NeedToCheck): {
+              route.needToCheck = alert.station_ids;
               break;
             }
           }

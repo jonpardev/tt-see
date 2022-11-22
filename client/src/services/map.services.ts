@@ -7,11 +7,11 @@ export const get = async (): Promise<AxiosResponse<IMap>> => {
     return backendApi.get<IMap>("/map");
 }
 
-export const getLatestId = async (): Promise<number> => {
+export const getLatestId = async (): Promise<string> => {
     try {
-        const response = await backendApi.get<number>('/map/latest');
+        const response = await backendApi.get<string>('/map/latest');
         if (!response.data) throw new ErrorWithCode(ErrorCode.BackendResponseButNoData, `There is a problem on the remote server.`);
-        return response.data as number;
+        return response.data as string;
     } catch(error) { throw new ErrorWithCode(ErrorCode.BackendNoResponse, `There is a problem on the remote server.`); }
 }
 
@@ -22,7 +22,8 @@ export const getMapDto = async (): Promise<IMapDto> => {
             const map: IMapDto = {
                 _id: response.data._id,
                 lines: response.data.lines,
-                updatedAt: Date.now(),
+                createdAt: response.data.createdAt,
+                retrievedAt: Date.now(),
             }
             return map;
         } else throw new ErrorWithCode(ErrorCode.BackendResponseButNoData, `There is a problem on the remote server.`);

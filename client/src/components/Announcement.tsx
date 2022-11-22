@@ -17,23 +17,6 @@ type ColorAndSymbol = {
 }
 
 export const Announcement = ({ type, message }: AnnouncementProps) => {
-    // const informationBanner = (<div className="bg-sky-200 text-sky-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
-    // const warningBanner = (<div className="bg-yellow-200 text-yellow-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
-    // const alertBanner = (<div className="text-white bg-rose-600 px-4 py-3 rounded-lg mb-2">{message}</div>);
-    // const defaultBanner = (<div className="bg-slate-300 text-slate-800 px-4 py-3 rounded-lg mb-2">{message}</div>);
-
-    // if (type === undefined) return defaultBanner;
-    // switch (type) {
-    //     case AnnouncementType.Information:
-    //         return informationBanner;
-    //     case AnnouncementType.Warning:
-    //         return warningBanner;
-    //     case AnnouncementType.Alert:
-    //         return alertBanner;
-    //     default:
-    //         return defaultBanner;
-    // }
-
     const information: ColorAndSymbol = { color: "bg-sky-600", symbol: "notifications" }
     const warning: ColorAndSymbol = { color: "bg-amber-600", symbol: "warning" }
     const alert: ColorAndSymbol = { color: "bg-rose-600", symbol: "error" }

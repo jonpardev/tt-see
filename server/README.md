@@ -11,5 +11,4 @@ TT-See Server provides REST APIs for TT-See client.
 ## To Do List
 - [X] Provide the transit map and alerts via REST API
 - [X] Process the official agency's API
-- [ ] Process the trend search
 - [ ] Process the user report
