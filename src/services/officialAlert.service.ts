@@ -113,8 +113,9 @@ const transformToAlerts = async () => {
 const getOfficialRawRoutes = async() => {
     try {
         const response = await officialApi.get<OfficialRaw>("/");
+        console.log(OFFICIAL_URI);
         const routes = response.data.routes;
-        if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes`);
+        if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes'`);
         const rawRoutes: OfficialRawRoute[] = [ ];
         routes.forEach(alert => {
             if (alert.routeType !== "Subway") return; // continue(*skip) for forEach
