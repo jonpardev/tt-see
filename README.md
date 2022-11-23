@@ -1,6 +1,6 @@
 # TT-See
 
-> Link: [jonpardev.github.io](https://jonpardev.github.io/tt-see)
+> Link: [jonpardev.github.io/tt-see](https://jonpardev.github.io/tt-see)
 
 ## v1
 
@@ -8,7 +8,7 @@ Toronto Subway Watcher.
 
 ## License
 
-You can use this code for you. But, ⚠️ I don't have rights for official APIs.
+You can use this code for you.
 
 ## Recommendation
 
