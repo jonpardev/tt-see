@@ -105,12 +105,13 @@ const transformToAlerts = async () => {
  */
 const getOfficialRawRoutes = async() => {
     try {
-        const response = await axios.request<OfficialRaw>({
+        const responseBuffer = await axios.request({
             url: OFFICIAL_URI,
-            responseType: 'json',
-            responseEncoding: 'utf8',
+            responseType: 'arraybuffer',
+            responseEncoding: 'binary',
         });
-        const routes = response.data.routes;
+        const response: OfficialRaw = JSON.parse(responseBuffer.data.toString("utf8"));
+        const routes = response.routes;
         if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes'`);
         const rawRoutes: OfficialRawRoute[] = [ ];
         routes.forEach(alert => {
