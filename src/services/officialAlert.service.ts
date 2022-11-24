@@ -1,11 +1,11 @@
-import axios from 'axios';
 import { HydratedDocument, Types } from 'mongoose';
-import { OFFICIAL_URI } from '../config/env';
 import { Alert, IAlert, IAlertDto, Status } from '../models/alert.model';
 import { IStation } from '../models/station.model';
 import { Effect, OfficialAlert as OfficialRaw, OfficialAlertRoute as OfficialRawRoute } from '../types/officialAlert.type';
 import { findOfficialAlerts, saveOfficialAlerts } from './alert.service';
 import { findLatestMap } from './map.service';
+import nodeFetch from 'node-fetch';
+import { OFFICIAL_URI } from '../config/env';
 
 export const updateOfficialAlerts = async () => {
     try {
@@ -100,29 +100,15 @@ const transformToAlerts = async () => {
     }
 }
 
-//TODO remove this once the problem is resolved
-export const testForDev = async() => {
-    const res = await axios.request({
-        url: OFFICIAL_URI,
-        responseType: "json",
-        responseEncoding: "utf8", 
-    });
-    const result = {
-        data: res.data,
-    }
-    console.log(result);
-}
-
 /**
  * Retrieve raw data from the official server and purify them.
  */
 const getOfficialRawRoutes = async() => {
     try {
-        const response = await axios.request<OfficialRaw>({
-            url: OFFICIAL_URI,
-        });
-        const routes = response.data.routes;
-        if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes'`);
+        const response = await nodeFetch(OFFICIAL_URI);
+        const data = (await response.json()) as OfficialRaw;
+        const routes = data.routes;
+        if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes`);
         const rawRoutes: OfficialRawRoute[] = [ ];
         routes.forEach(alert => {
             if (alert.routeType !== "Subway") return; // continue(*skip) for forEach
