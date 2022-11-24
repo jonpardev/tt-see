@@ -104,7 +104,7 @@ const transformToAlerts = async () => {
 export const testForDev = async() => {
     const res = await axios.request({
         url: OFFICIAL_URI,
-        responseType: "text",
+        responseType: "json",
         responseEncoding: "iso-8859-15", 
     });
     const result = {
