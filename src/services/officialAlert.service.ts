@@ -102,7 +102,9 @@ const transformToAlerts = async () => {
 
 //TODO remove this once the problem is resolved
 export const testForDev = async() => {
-    const res = await axios.get(OFFICIAL_URI);
+    const res = await axios.request({
+        url: OFFICIAL_URI,
+    });
     return {
         data: res.data,
         headers: res.headers,
