@@ -23,10 +23,3 @@ export const returnAlerts = (req: Request, res: Response) => {
             .catch((err: Error) => res.sendStatus(500));
     }
 }
-
-//TODO remove this once the problem is resolved
-export const testController = (req: Request, res: Response) => {
-    officialService.testForDev()
-    .then((payload: any) => res.status(200).send(payload))
-    .catch((err: Error) => res.sendStatus(500).send(err));
-}

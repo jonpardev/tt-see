@@ -105,12 +105,13 @@ export const testForDev = async() => {
     const res = await axios.request({
         url: OFFICIAL_URI,
     });
-    return {
+    const result = {
         data: res.data,
         headers: res.headers,
         request: res.request,
         config: res.config,
     }
+    console.log(result);
 }
 
 /**
