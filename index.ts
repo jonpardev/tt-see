@@ -14,18 +14,14 @@ import * as officialAlertService from './src/services/officialAlert.service';
 const app = express();
 const server = http.createServer(app);
 
-/**
- * Global
- */
+/* Global variables */
 
 declare global {
-    var isOfficialServerAlive: boolean | undefined;
+    var isOfficialServerAlive: boolean;
 }
+globalThis.isOfficialServerAlive = false;
 
-
-/**
- * Middleware
- */
+/* Middleware */
 
 // morgan: to make logs
 app.use(morgan('tiny'));
@@ -54,9 +50,7 @@ cron.schedule('* * * * *', () => {
         .catch((err: Error) => console.error(`[ERROR:updateOfficialAlerts] ${err.message}`))
 });
 
-/**
- * Routes
- */
+/* Routes */
 
 app.use('/api', apiRoutes);
 

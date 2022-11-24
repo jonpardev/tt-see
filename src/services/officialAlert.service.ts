@@ -123,8 +123,10 @@ const getOfficialRawRoutes = async() => {
             }
             rawRoutes.push(newAlert);
         });
+        globalThis.isOfficialServerAlive = true;
         return rawRoutes;
     } catch(error: unknown) {
+        globalThis.isOfficialServerAlive = false;
         if (error instanceof Error) throw error;
         else throw new Error(`[ERROR:getOfficialAlerts] Unexpected`);
     }
