@@ -108,10 +108,12 @@ const getOfficialRawRoutes = async() => {
         const response = await axios.request<OfficialRaw>({
             url: OFFICIAL_URI,
             headers: {
-                "Content-Type": "application/json;charset=UTF-8",
+                "Accept": "application/json; charset=utf-8",
                 "Accept-Language": "en-US,en;",
+                "Accept-Encoding": "br",
             }
         });
+        console.log(response.headers);
         console.log(response.data);
         const routes = response.data.routes;
         if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes'`);
