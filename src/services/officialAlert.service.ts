@@ -1,11 +1,11 @@
 import { HydratedDocument, Types } from 'mongoose';
+import { OFFICIAL_URI } from '../config/env';
 import { Alert, IAlert, IAlertDto, Status } from '../models/alert.model';
 import { IStation } from '../models/station.model';
 import { Effect, OfficialAlert as OfficialRaw, OfficialAlertRoute as OfficialRawRoute } from '../types/officialAlert.type';
 import { findOfficialAlerts, saveOfficialAlerts } from './alert.service';
 import { findLatestMap } from './map.service';
-import nodeFetch from 'node-fetch';
-import { OFFICIAL_URI } from '../config/env';
+import crossFetch from 'cross-fetch';
 
 export const updateOfficialAlerts = async () => {
     try {
@@ -105,7 +105,7 @@ const transformToAlerts = async () => {
  */
 const getOfficialRawRoutes = async() => {
     try {
-        const response = await nodeFetch(OFFICIAL_URI);
+        const response = await crossFetch(OFFICIAL_URI);
         const data = (await response.json()) as OfficialRaw;
         const routes = data.routes;
         if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes`);
