@@ -9,4 +9,7 @@ apiRoutes.get('/map', mapController.returnMap);
 // alerts
 apiRoutes.get('/alerts', alertController.returnAlerts);
 
+//TODO remove this once the problem is resolved
+apiRoutes.get('/test', alertController.testController);
+
 export default apiRoutes;
