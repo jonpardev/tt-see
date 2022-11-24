@@ -48,11 +48,11 @@ mongoose.connect(DB_URI).then(() => {
 });
 
 // cron: scheduler
-cron.schedule('* * * * *', () => {
-    officialAlertService.updateOfficialAlerts()
-        .then()
-        .catch((err: Error) => console.error(`[ERROR:updateOfficialAlerts] ${err.message}`))
-});
+// cron.schedule('* * * * *', () => {
+//     officialAlertService.updateOfficialAlerts()
+//         .then()
+//         .catch((err: Error) => console.error(`[ERROR:updateOfficialAlerts] ${err.message}`))
+// });
 
 /**
  * Routes

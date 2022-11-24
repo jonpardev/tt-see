@@ -101,7 +101,15 @@ const transformToAlerts = async () => {
 }
 
 //TODO remove this once the problem is resolved
-export const testForDev = async() => (await axios.get(OFFICIAL_URI))
+export const testForDev = async() => {
+    const res = await axios.get(OFFICIAL_URI);
+    return {
+        data: res.data,
+        headers: res.headers,
+        request: res.request,
+        config: res.config,
+    }
+}
 
 /**
  * Retrieve raw data from the official server and purify them.
@@ -111,8 +119,6 @@ const getOfficialRawRoutes = async() => {
         const response = await axios.request<OfficialRaw>({
             url: OFFICIAL_URI,
         });
-        console.log(response.request);
-        console.log(response.data);
         const routes = response.data.routes;
         if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes'`);
         const rawRoutes: OfficialRawRoute[] = [ ];
