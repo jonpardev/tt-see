@@ -12,3 +12,8 @@ export default interface IAlert {
     station_ids: string[];
     messages:string[];
 }
+
+export type AlertsResponse = {
+    is_o_alive: boolean,
+    alerts: IAlert[],
+}

@@ -1,5 +1,5 @@
-import { ILineDto, IMap, IMapDto } from "../models/map.model";
-import IRoute from "../models/route.model";
+import { ILineDto, IMap, IMapDto } from "../types/map.model";
+import IRoute from "../types/route.model";
 
 export enum Keys {
     map = 'map',

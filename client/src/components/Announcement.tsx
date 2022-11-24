@@ -22,7 +22,6 @@ export const Announcement = ({ type, message }: AnnouncementProps) => {
     const alert: ColorAndSymbol = { color: "bg-rose-600", symbol: "error" }
 
     const returnColorAndSymbol = () => {
-        console.log(`this was called`);
         switch (type) {
             case AnnouncementType.Warning:
                 return warning;

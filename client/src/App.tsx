@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo, useLayoutEffect, MouseEvent } from 'react';
 import * as alertService from './services/alert.services';
 import * as localStorageService from './services/localStorage.services';
-import IRoute from './models/route.model';
-import { IMap } from './models/map.model';
-import { Status } from './models/alert.model';
+import IRoute from './types/route.model';
+import { IMap } from './types/map.model';
+import { Status } from './types/alert.model';
 import { Announcement, AnnouncementType } from './components/Announcement';
 import { DisplayRoute } from './components/DisplayRoute/DisplayRoute';
 import Header from './components/Header/Header';
@@ -12,9 +12,10 @@ import LoadingWithCircle from './components/LoadingWithCircle';
 import SelfExpandable from './components/SelfExpandable';
 import { localStorageInitializer } from './helpers/localStorage.helper';
 import { epochToText } from './helpers/epochToText';
-import { useAppSelector } from './store/hooks';
+import { useAppDispatch, useAppSelector } from './store/hooks';
 import { GlobalTheme } from './services/localStorage.services';
 import setTheme from './helpers/setTheme';
+import { setIsOAlive } from './store/isOAliveSlice';
 
 const App = () => {
   // states of App
@@ -26,7 +27,9 @@ const App = () => {
   const [routes, setRoutes] = useState<IRoute[]>();
   const [updatedAt, setUpdatedAt] = useState<number>();
 
+  const dispatch = useAppDispatch();
   const isThemeDark = useAppSelector(state => state.globalTheme.isDark);
+  const isOAlive = useAppSelector(state => state.officialServer.isAlive);
 
   const setMapRoutesByGetAlerts = async () => {
     const localStorageRoutes = await localStorageService.getRoutes() ?? [ ] as IRoute[];
@@ -37,7 +40,8 @@ const App = () => {
     let nextIsConnected: boolean = false;
 
     try {
-      const alerts = await alertService.getAll();
+      const alertsResponse = await alertService.getAll();
+      const alerts = alertsResponse.alerts;
       const prevRoutes = localStorageRoutes.map(route => ({
         order: route.order,
         line: route.line,
@@ -74,7 +78,8 @@ const App = () => {
       nextUpdatedAt = Date.now();
       localStorageService.setAlertsUpdatedAt(nextUpdatedAt);
 
-      nextIsConnected = true;
+      nextIsConnected = alertsResponse.is_o_alive;
+      dispatch(setIsOAlive(alertsResponse.is_o_alive));
     }
     catch(error) {
       // console.error(error);
@@ -145,13 +150,13 @@ const App = () => {
     <div className=" bg-slate-200 dark:bg-slate-800 p-4">
       <div className={`max-w-sm mx-auto p-4 rounded-lg flex flex-col gap-4 ${(isConnected === undefined || isConnected === true) ? "bg-slate-100 dark:bg-slate-900" : "bg-rose-200 dark:bg-rose-900"} ${isLoading && "animate-pulse"}`}>
         <Header />
-        {isConnected === false && (<Announcement message="Update failed" type={AnnouncementType.Alert} />)}
+        {isConnected === false && (<Announcement message={`Update failed: ${isOAlive === undefined ? "Disconnected" : (!isOAlive && "API server error")}`} type={AnnouncementType.Alert} />)}
         {isLoading ? (
         <LoadingWithCircle />
         ) : (<>
-        {routes?.map((route: IRoute) => (
-          <DisplayRoute key={route.order} route={route} />
-        ))}
+          {routes?.map((route: IRoute) => (
+            <DisplayRoute key={route.order} route={route} />
+          ))}
         </>)}
 
         {!isLoading && (

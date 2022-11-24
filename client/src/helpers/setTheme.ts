@@ -1,7 +1,6 @@
 import { setThemeDark, setThemeLight } from "../store/globalThemeSlice";
 import { store } from "../store/store";
 
-
 const setTheme = {
     light: () => {
         store.dispatch(setThemeLight()); // to use dispatch in the outside of component, import store

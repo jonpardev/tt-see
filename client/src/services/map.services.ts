@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import backendApi from "../config/api";
-import ErrorWithCode, { ErrorCode } from "../models/error.model";
-import { IMap, IMapDto } from "../models/map.model";
+import ErrorWithCode, { ErrorCode } from "../types/error.model";
+import { IMap, IMapDto } from "../types/map.model";
 
 export const get = async (): Promise<AxiosResponse<IMap>> => {
     return backendApi.get<IMap>("/map");

@@ -1,5 +1,5 @@
-import IRoute from '../models/route.model';
-import { ILineDto, IStation } from '../models/map.model';
+import IRoute from '../types/route.model';
+import { ILineDto, IStation } from '../types/map.model';
 import * as localStorageService from '../services/localStorage.services';
 import * as mapService from '../services/map.services';
 

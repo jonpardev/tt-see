@@ -1,15 +1,14 @@
-import axios, { AxiosResponse } from "axios";
 import backendApi from "../config/api";
-import IAlert from "../models/alert.model";
-import ErrorWithCode, { ErrorCode } from "../models/error.model";
+import { AlertsResponse } from "../types/alert.model";
+import ErrorWithCode, { ErrorCode } from "../types/error.model";
 
-export const getAll = () => (
-    new Promise<IAlert[]>((resolve, reject) => {
-        backendApi.get<IAlert[]>('/alerts')
-            .then((response: AxiosResponse) => {
-                if (!response.data) reject(new ErrorWithCode(ErrorCode.BackendResponseButNoData, `There is a problem on the remote server.`));
-                resolve(response.data);
-            }).catch(error => {
-                if (axios.isAxiosError(error)) reject(new ErrorWithCode(ErrorCode.BackendNoResponse, `There is a problem on the remote server.`));
-            });
-    }));
+export const getAll = async () => {
+    try {
+        const response = await backendApi.get<AlertsResponse>('/alerts');
+        if (!response.data) throw new ErrorWithCode(ErrorCode.BackendResponseButNoData, "There is a problem on the remote server.");
+        return response.data;
+    } catch (error: unknown) {
+        if (error instanceof Error) throw error;
+        else throw new ErrorWithCode(ErrorCode.BackendNoResponse, "There is an unexpected problem on the remote server.");
+    }
+}

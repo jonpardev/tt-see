@@ -1,5 +1,5 @@
 import { useEffect, useState, CSSProperties, MouseEvent } from "react";
-import IRoute from "../../models/route.model";
+import IRoute from "../../types/route.model";
 import SelfExpandable from "../SelfExpandable";
 import DotWithTitle from "./DotWithTitle";
 
