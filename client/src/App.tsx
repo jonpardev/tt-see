@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useLayoutEffect } from 'react';
+import { useState, useEffect, useMemo, useLayoutEffect, MouseEvent } from 'react';
 import * as alertService from './services/alert.services';
 import * as localStorageService from './services/localStorage.services';
 import IRoute from './models/route.model';
@@ -20,6 +20,7 @@ const App = () => {
   // states of App
   const [isConnected, setIsConnected] = useState<boolean>();
   const [isLoading, setIsLoading] = useState(true);
+  const [isExtraExpanded, setIsExtraExpanded] = useState(false);
   // data for app
   const [map, setMap] = useState<IMap>();
   const [routes, setRoutes] = useState<IRoute[]>();
@@ -121,6 +122,18 @@ const App = () => {
     setMapRoutesByGetAlerts().then();
   }
 
+  const extraOnClick = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+      switch (isExtraExpanded) {
+        case true:
+          setIsExtraExpanded(false);
+          return;
+        case false:
+          setIsExtraExpanded(true);
+          return;
+      }
+}
+
   const resetMapOnClick = () => {
     localStorage.clear();
     window.location.reload();
@@ -144,16 +157,19 @@ const App = () => {
         {!isLoading && (
           <ButtonWithTimer timer={10} onClick={refreshButtonOnClick} />
         )}
-        <div className="text-slate-500 text-sm w-full text-center">by Jonny Park | <a className="opacity-75 hover:opacity-100 hover:underline" href="https://jonpardev.github.com/tt-see">Github Repo</a></div>
-        <SelfExpandable jsxElement={(<>
-          <div className="text-slate-500 text-sm text-center opacity-50">
-            <span>UpdatedAt: {!isLoading ? updatedAtToText : <span className="animate-pulse back">Loading</span>}</span><span> / </span>
-            <span>MapVersion: {!isLoading ? map?._id : <span className="animate-pulse back">Loading</span>}</span><br />
-          </div>
-          <div className="text-slate-500 text-xs text-right mt-1 opacity-25 hover:opacity-50">
-            <span className="cursor-pointer" onClick={resetMapOnClick}>ResetMap</span>
-          </div>
-        </>)} />
+        <div>
+          <div className="text-slate-500 text-sm w-full text-center">by Jonny Park | <a className="opacity-75 hover:opacity-100 hover:underline" href="https://jonpardev.github.com/tt-see">Github Repo</a></div>
+          <div className={`text-black dark:text-white opacity-25 text-md text-center align-middle leading-none select-none cursor-pointer`} onClick={extraOnClick}><span className={`inline-block font-MaterialSymbols mt-2 ${isExtraExpanded && "rotate-180"}`}>expand_more</span></div>
+          <SelfExpandable jsxElement={(<>
+            <div className="text-slate-500 text-sm text-center opacity-50">
+              <span>UpdatedAt: {!isLoading ? updatedAtToText : <span className="animate-pulse back">Loading</span>}</span><span> / </span>
+              <span>MapVersion: {!isLoading ? map?._id : <span className="animate-pulse back">Loading</span>}</span><br />
+            </div>
+            <div className="text-slate-500 text-xs text-right mt-1 opacity-25 hover:opacity-50">
+              <span className="cursor-pointer" onClick={resetMapOnClick}>ResetMap</span>
+            </div>
+          </>)} isExpanded={isExtraExpanded} />
+        </div>
       </div>
     </div>
   );
