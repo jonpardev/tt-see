@@ -105,7 +105,7 @@ export const testForDev = async() => {
     const res = await axios.request({
         url: OFFICIAL_URI,
         responseType: "text",
-        responseEncoding: "latin1", 
+        responseEncoding: "iso-8859-1", 
     });
     const result = {
         data: res.data,
