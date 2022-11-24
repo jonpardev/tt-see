@@ -38,7 +38,7 @@ const manageOfficialAlerts = async (): Promise<HydratedDocument<IAlert>[]> => {
                 // And remove the alert so that later, the remaining alerts can be flagged as dismissed.
                 currentAlerts.splice(foundAlertIndex, 1);
                 // compare the station array
-                if (!foundAlert.station_ids.sort().toString().match(newAlertDto.station_ids.sort().toString())) {
+                if (foundAlert.station_ids.sort().toString() !== newAlertDto.station_ids.sort().toString()) {
                     foundAlert.station_ids = newAlertDto.station_ids;
                     foundAlert.messages = newAlertDto.messages;
                     foundAlert.updatedAt = new Date(Date.now());
@@ -83,15 +83,22 @@ const transformToAlerts = async () => {
             const rawNumber = route.route.toString();
             const foundLine = map.lines.find(line => line.type === rawType && line.number === rawNumber);
             if(!foundLine) return; // continue(*skip) for forEach
-            const dateNow = new Date(Date.now());
-
-            const alert: IAlertDto = {
-                line_id: foundLine._id,
-                status: effectToStatus(route.effect),
-                station_ids: titleToStations(route.title, foundLine.stations).map(station => station._id),
-                messages: [route.title],
+            const processedStatus = effectToStatus(route.effect);
+            const processedStation_ids = titleToStations(route.title, foundLine.stations).map(station => station._id);
+            
+            const foundIndex = alerts.findIndex(alert => foundLine._id.equals(alert.line_id) && processedStatus === alert.status);
+            if(foundIndex >= 0) {
+                alerts[foundIndex].station_ids = alerts[foundIndex].station_ids.concat(processedStation_ids);
+                alerts[foundIndex].messages.push(route.title);
+            } else {
+                const alert: IAlertDto = {
+                    line_id: foundLine._id,
+                    status: processedStatus,
+                    station_ids: processedStation_ids,
+                    messages: [route.title],
+                }
+                alerts.push(alert);
             }
-            alerts.push(alert);
         });
         return alerts;
     } catch(error: unknown) {
