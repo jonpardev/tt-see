@@ -28,5 +28,5 @@ export const returnAlerts = (req: Request, res: Response) => {
 export const testController = (req: Request, res: Response) => {
     officialService.testForDev()
     .then((payload: any) => res.status(200).send(payload))
-    .catch((err: Error) => res.sendStatus(500));
+    .catch((err: Error) => res.sendStatus(500).send(err));
 }
