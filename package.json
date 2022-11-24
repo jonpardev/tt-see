@@ -10,7 +10,6 @@
     "client",
     "server"
   ],
-  "packageManager": "yarn@3.2.4",
   "scripts": {
     "dev": "concurrently -k  -n \"client,server\" -c \"bgBlueBright,bgYellow\" \"yarn workspace client run dev --host\" \"yarn workspace server run dev\""
   },

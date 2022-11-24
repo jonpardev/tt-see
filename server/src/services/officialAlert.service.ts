@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { HydratedDocument, Types } from 'mongoose';
 import { OFFICIAL_URI } from '../config/env';
 import { Alert, IAlert, IAlertDto, Status } from '../models/alert.model';
@@ -6,13 +5,7 @@ import { IStation } from '../models/station.model';
 import { Effect, OfficialAlert as OfficialRaw, OfficialAlertRoute as OfficialRawRoute } from '../types/officialAlert.type';
 import { findOfficialAlerts, saveOfficialAlerts } from './alert.service';
 import { findLatestMap } from './map.service';
-
-const officialApi = axios.create({
-    baseURL: OFFICIAL_URI,
-    headers: {
-        "Content-type": "application/json"
-    }
-});
+import crossFetch from 'cross-fetch';
 
 export const updateOfficialAlerts = async () => {
     try {
@@ -112,8 +105,9 @@ const transformToAlerts = async () => {
  */
 const getOfficialRawRoutes = async() => {
     try {
-        const response = await officialApi.get<OfficialRaw>("/");
-        const routes = response.data.routes;
+        const response = await crossFetch(OFFICIAL_URI);
+        const data = (await response.json()) as OfficialRaw;
+        const routes = data.routes;
         if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes`);
         const rawRoutes: OfficialRawRoute[] = [ ];
         routes.forEach(alert => {
