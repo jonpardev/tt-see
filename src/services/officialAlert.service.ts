@@ -7,10 +7,6 @@ import { Effect, OfficialAlert as OfficialRaw, OfficialAlertRoute as OfficialRaw
 import { findOfficialAlerts, saveOfficialAlerts } from './alert.service';
 import { findLatestMap } from './map.service';
 
-const officialApi = axios.create({
-    baseURL: OFFICIAL_URI,
-});
-
 export const updateOfficialAlerts = async () => {
     try {
         const alerts = await manageOfficialAlerts();
@@ -109,7 +105,13 @@ const transformToAlerts = async () => {
  */
 const getOfficialRawRoutes = async() => {
     try {
-        const response = await officialApi.get<OfficialRaw>("");
+        const response = await axios.request<OfficialRaw>({
+            url: OFFICIAL_URI,
+            headers: {
+                "Content-Type": "application/json;charset=UTF-8",
+                "Accept-Language": "en-US,en;",
+            }
+        });
         console.log(response.data);
         const routes = response.data.routes;
         if (!routes) throw new Error(`[ERROR:getOfficialAlerts] Cannot find 'routes'`);
